@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var pg = require('pg');
 router.get('/',function(req,res,next)
 {
     //res.render('signup');
@@ -8,6 +8,15 @@ router.get('/',function(req,res,next)
 });
 router.post('/',function(req,res)
 {
+    pg.connect(process.env.DATABASE_URL
+        || "postgres://klunfsfdwbevma:bFLgS8c-TUNKh_dR606C3Tv0XH@ec2-75-101-162-243" +
+        ".compute-1.amazonaws.com:5432/d18guk57b2gvsh"
+            ,function(err,client,done)
+    {
+        if (err) {
+            return console.error('error fetching client from pool', err);
+        }
+
     //console.log(req.body.username);
     var error=false;
     var user_error="";
@@ -26,6 +35,19 @@ router.post('/',function(req,res)
     }
     else
     {
+        client.query('select exists(select 1 from users where username=$1)',[username],function(err,alreadyExists)
+        {
+            done();
+            if (err) {
+                return console.error('error running query', err);
+            }
+            console.log(alreadyExists+" which is "+typeof result);
+            if(alreadyExists)
+            {
+                error=true;
+                user_error="User already exists"
+            }
+        });
         console.log("Username is fine");
         //console.log("EMAIL is "+email.toString());
     }
@@ -63,6 +85,7 @@ router.post('/',function(req,res)
     {
         res.send("Registration is successful")
     }
+    });
 });
 
 module.exports = router;
