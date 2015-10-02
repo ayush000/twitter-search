@@ -1,0 +1,60 @@
+extends layout
+block content
+    if (!locals.user)
+        - user=""
+    if (!locals.user_email)
+        - user_email=""
+    if(!locals.pass_error)
+        - pass_error=""
+    if(!locals.verify_error)
+        - verify_error=""
+    if(!locals.email_error)
+        - email_error=""
+    if(!locals.user_error)
+        - user_error=""
+    //if(!locals.user_error)
+    //    - user_error=""
+    form(method="post")
+        table
+            tr
+                td
+                    label Username
+                td
+                    input(type="text" name="username" value="#{user}")
+            tr
+                td
+                td
+                    .error #{user_error}
+                    br
+            tr
+                td
+                    label Password
+                td
+                    input(type="password" name="password")
+            tr
+                td
+                td
+                    .error #{pass_error}
+                    br
+            tr
+                td
+                    label Repeat
+                td
+                    input(type="password" name="verify")
+            tr
+                td
+                td
+                    .error #{verify_error}
+                    br
+            tr
+                td
+                    label Email
+                td
+                    input(type="text" name="email" value="#{user_email}")
+            tr
+                td
+                td
+                    .error #{email_error)
+            tr
+                td
+                    button(type="submit") Sign up
