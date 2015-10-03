@@ -8,9 +8,7 @@ router.get('/',function(req,res,next)
 });
 router.post('/',function(req,res)
 {
-    pg.connect(process.env.DATABASE_URL
-        || "postgres://klunfsfdwbevma:bFLgS8c-TUNKh_dR606C3Tv0XH@ec2-75-101-162-243" +
-        ".compute-1.amazonaws.com:5432/d18guk57b2gvsh"
+    pg.connect(process.env.DATABASE_URL|| "postgres://swarn:gtalk123@localhost:5432"
             ,function(err,client,done)
     {
         if (err) {
@@ -35,16 +33,19 @@ router.post('/',function(req,res)
     }
     else
     {
-        client.query('select exists(select 1 from users where username=$1)',[username],function(err,alreadyExists)
+        client.query('select exists(select 1 from users where username=$1)',[username],function(err,result)
+        //client.query('select username from users',function(err,result)
         {
             done();
             if (err) {
                 return console.error('error running query', err);
             }
-            console.log(alreadyExists+" which is "+typeof result);
-            if(alreadyExists)
+            console.log("DB query gives "+result.rows[0].exists+" which is "+typeof result.rows[0].exists);
+            if(result.rows[0].exists)
             {
+                console.log("Error set");
                 error=true;
+                console.log("error status after setting is "+error);
                 user_error="User already exists"
             }
         });
@@ -77,6 +78,11 @@ router.post('/',function(req,res)
     {
         console.log("Email is blank");
     }
+        console.log("Error status before check is "+error);
+        query.on('row',function(row)
+        {
+
+
     if(error)
     {
         res.render('signup',{user: username,user_error: user_error,pass_error: pass_error,verify_error: verify_error,email_error: email_error,user_email: email});
@@ -86,6 +92,7 @@ router.post('/',function(req,res)
         res.send("Registration is successful")
     }
     });
+    })
 });
 
 module.exports = router;
