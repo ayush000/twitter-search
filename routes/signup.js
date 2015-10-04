@@ -38,8 +38,8 @@ router.post('/', function (req, res) {
     };
     //var locked = true;
     pg.connect(process.env.DATABASE_URL || "postgres://" +
-            //"swarn:gtalk123@" +
-        "socomo14:gtalk123@" +
+            "swarn:gtalk123@" +
+        //"socomo14:gtalk123@" +
         "localhost:5432"
         , function (err, client, done) {
             if (err) {
