@@ -50,7 +50,12 @@ router.post('/', function (req, res) {
             var checkUsername=function(callback)
             {
                 console.log("Username is "+username);
-                if (!/^[a-zA-Z0-9.\-_$@*!]{3,30}$/.test(username.toString()))            //Username not valid
+                if(username==="")
+                {
+                    user_error="Enter a username";
+                    callback(null,true);
+                }
+                else if (!/^[a-zA-Z0-9.\-_$@*!]{3,30}$/.test(username.toString()))            //Username not valid
                 {
                     console.log("Username error");
                     user_error = "Enter a  valid username.";
@@ -156,6 +161,7 @@ router.post('/', function (req, res) {
                     {
                         client.query('select exists(select 1 from users where email=$1)', [email], function (err, result) {
                             console.log("DB query to check existence: "+result.rows[0].exists);
+
                             done();
                             if(err)
                             {

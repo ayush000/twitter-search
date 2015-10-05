@@ -1,0 +1,35 @@
+//
+   Created by socomo14 on 10/5/15.
+
+extends layout
+
+block content
+    if (!locals.user)
+        - user=""
+    form(method="post")
+        table
+            tr
+                td
+                    label Username
+                td
+                    input(type="text" name="username" value="#{user}")
+            tr
+                td
+                td
+                    .error #{user_error}
+                    br
+            tr
+                td
+                    label Password
+                td
+                    input(type="password" name="password")
+            tr
+                td
+                td
+                    .error #{pass_error}
+                    br
+            tr
+                td
+                    button(type="submit" name="login" value="login") Login
+                td
+                    button(type="submit" name="signup") Sign up
