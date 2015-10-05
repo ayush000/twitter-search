@@ -43,6 +43,7 @@ router.post('/', function (req, res) {
         "localhost:5432"
         , function (err, client, done) {
             if (err) {
+                //callback(err);
                 throw err;
                 //return console.error('error fetching client from pool', err);
             }
@@ -54,6 +55,7 @@ router.post('/', function (req, res) {
                     console.log("Username error");
                     user_error = "Enter a  valid username.";
                     error=true;
+                    callback(null,error);
                     //renderSignup(user_error,"","","");
                 }
                 else
@@ -63,18 +65,24 @@ router.post('/', function (req, res) {
                         console.log("DB query (user) to check existence: "+result.rows[0].exists);
                         done();
                         if (err) {
-                            return console.error('error running query', err);
+                            //return console.error('error running query', err);
+                            callback(err);
                         }
                         //console.log("DB query gives " + result.rows[0].exists + " which is " + typeof result.rows[0].exists);
                         if (result.rows[0].exists) {
-                            error=true;
+                            //error=true;
                             user_error = "User already exists";
+                            callback(null,true);
+                        }
+                        else
+                        {
+                            callback(null,false);
                         }
                     });
 
                 }
                 console.log("END: Username is "+username);
-                callback(null,error);
+
 
             };
 
@@ -132,16 +140,17 @@ router.post('/', function (req, res) {
                     verify_error = "Passwords don't match"
                 }
                 console.log("END: password is "+password);
-                callback(null);
+                callback(null,error);
             };
             var check_email = function(callback) {
                 console.log("email is "+email);
                 if (email != "") {
                     //console.log(email);
                     if (!/^\S+@\S+\.\S+$/.test(email.toString())) {
-                        console.log("email hass error")
+                        console.log("email has error");
                         error = true;
-                        email_error = "Please enter a valid email"
+                        email_error = "Please enter a valid email";
+                        callback(null,error);
                     }
                     else
                     {
@@ -150,7 +159,8 @@ router.post('/', function (req, res) {
                             done();
                             if(err)
                             {
-                                return console.error('error running query', err);
+                                //return console.error('error running query', err);
+                                callback(err);
                             }
 
 
@@ -158,11 +168,12 @@ router.post('/', function (req, res) {
 
                             error=true;
                             email_error="User with same email exists";
+                            callback(null,error);
                             //renderSignup();
                         }
                         else
                         {
-                            res.send("Registration successful");
+                            callback(null,false);
                         }
                         });
                     }
@@ -172,7 +183,7 @@ router.post('/', function (req, res) {
                 //}
                 //callback();
                 console.log("END: email is "+email);
-                callback(null);
+
             };
             //var renderPage = function () {
             //console.log("Error status before checking email is " + error);
@@ -249,20 +260,31 @@ router.post('/', function (req, res) {
             //});
             async.parallel([checkUsername,check_email,check_password],function(err,result)
             {
-                error=result||false;
+                var error1=false;
+                //error=result||false;
                 console.log("callback of async query with error="+error);
                 if(err)
                 {
                     console.log("Async error: "+err);
                 }
                 //console.log("Parallel working fine");
-                if(error===true)
+                for(var i=0;i<result.length;i++)
+                {
+                    error1=error1||result[i];
+                    console.log("result is "+result[i]);
+                }
+                if(error1===true)
                 {
                     renderSignup(user_error,pass_error,verify_error,email_error);
                 }
                 else
                 {
-                    res.send("Registered");
+
+                    client.query('insert into users values ($1, $2, $3)',[username,password,email],function(err, result)
+                    {
+                        console.log("inserted");
+                        res.send("Registered");
+                    })
                 }
             })
         })
