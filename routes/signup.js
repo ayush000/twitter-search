@@ -38,8 +38,8 @@ router.post('/', function (req, res) {
     };
     //var locked = true;
     pg.connect(process.env.DATABASE_URL || "postgres://" +
-            "swarn:gtalk123@" +
-        //"socomo14:gtalk123@" +
+            //"swarn:gtalk123@" +
+        "socomo14:gtalk123@" +
         "localhost:5432"
         , function (err, client, done) {
             if (err) {
@@ -178,9 +178,10 @@ router.post('/', function (req, res) {
                         });
                     }
                 }
-                //else {
-                    //console.log("Email is blank");
-                //}
+                else {
+                    console.log("Email is blank");
+                    callback(null,false);
+                }
                 //callback();
                 console.log("END: email is "+email);
 
