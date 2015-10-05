@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var async = require('async');
+
 router.get('/', function (req, res, next) {
     res.render('login');
     console.log("get: "+req.body.login);

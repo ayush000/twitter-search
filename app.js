@@ -25,10 +25,43 @@ app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//I check for cookie on each page
+/*app.use(function(req,res,next)
+{
+  console.log("I get executed for each req: "+req.url);
+  var cookie=res.cookie.login;
+  if((typeof cookie === 'undefined')||!checkCookie(res.cookie.login))
+  {
+    if(req.url!=='/login') {
+      res.redirect('/login');
+    }
+    else
+    {
+      next();
+    }
+  }
+  else
+  {
+    if(req.url==='/login'||req.url==='/signup')
+    {
+      res.redirect('/')
+    }
+    else
+    {
+      next();
+    }
+  }
+
+  //next();
+});*/
+
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/signup',signup);
 app.use('/login',login);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -60,6 +93,9 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+
+
 
 
 module.exports = app;
